@@ -1,5 +1,5 @@
 import React from 'react';
-import axios from 'axios';
+import './movies.css';
 import { updateMovieList, updateInputData } from '../actions/index';
 import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
@@ -105,14 +105,25 @@ const divStyle = {
 const movieContent = PAGE1.page['content-items'].content;
 
 class Movielist extends React.Component {
+    constructor() {
+        super();
+        this.state = {
+            'search' : ''
+        }
+    }
 
     handleinputs(e) {
         const value = e.target.value;
+        this.setState({search: value })
         this.props.updateInputData(value);
-        const filteredMovieList = movieContent.filter((list) =>{
+        const filteredMovieList = movieContent.filter((list) => {
             return list.name.toLocaleLowerCase().match(value.toLocaleLowerCase())
         })
         this.props.updateMovieList(filteredMovieList);
+    }
+    back(e) {
+        this.setState({search: ''})
+        this.props.updateMovieList(movieContent); //giving movies to store via actions
     }
 
     componentWillReceiveProps(nextProps) {
@@ -126,11 +137,11 @@ class Movielist extends React.Component {
         const usersList = this.props.movieList;
         const usersListBlock = usersList.map((obj, i) => {
             return (
-                <div class="w-1/3">
-                    <LazyLoad throttle={200} height={300}>
+                <div class="w-1/3 ">
+                    <LazyLoad throttle={300} height={500} >
                         <div class=" p-4">
                             <img class="w-full" alt="hai" src={require('../../assets/images/' + obj["poster-image"])} />
-                            <h1>{obj.name} </h1>
+                            <h1 class="text-white">{obj.name} </h1>
                         </div>
                     </LazyLoad>
                 </div>
@@ -138,9 +149,10 @@ class Movielist extends React.Component {
         })
 
         return (
-            <div>
-                <input value={this.props.input} onChange={(e) => this.handleinputs(e)} class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="search" type="text" placeholder="Search"></input>
-                <div class="flex flex-wrap" >
+            <div className="back ">
+                   <button class='p-3' onClick={(e) => this.back(e)}><img alt='hai' class='image' src={require('../../assets/images/Back.png')} /></button>
+                    <input  value = {this.state.search} onChange={(e) => this.handleinputs(e)} class="back w-11/12 outline-none rounded  py-2 px-3 text-white" id="search" type="text" placeholder="Search"></input>
+                <div class="flex flex-wrap back" >
                     {usersListBlock}
                 </div>
             </div>
